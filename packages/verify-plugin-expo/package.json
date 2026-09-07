@@ -1,0 +1,40 @@
+{
+  "name": "@validity.ai/verify-plugin-expo",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanlanciaux/validity-verify.git",
+    "directory": "packages/verify-plugin-expo"
+  },
+  "description": "Expo config plugin that makes an app Validity-ready: guarantees the app owns a deep-link URL scheme, carries the mock runtime deps, and stamps expo.extra.validity so Validity's readiness checks can prove it ran.",
+  "keywords": [
+    "expo",
+    "expo-config-plugin",
+    "react-native",
+    "validity",
+    "deep-link",
+    "testing"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "app.plugin.js",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "test": "node ../../scripts/vitest-run.mjs --passWithNoTests"
+  },
+  "dependencies": {
+    "fast-text-encoding": ">=1.0.3 <2",
+    "msw": ">=2.0.0 <3",
+    "react-native-url-polyfill": ">=2.0.0 <5"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@validity.ai/verify-action",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": true,
+  "description": "GitHub Action for validity verify --all",
+  "scripts": {
+    "test": "node ../../scripts/vitest-run.mjs --passWithNoTests"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}

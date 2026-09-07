@@ -1,0 +1,45 @@
+{
+  "name": "@validity.ai/verify-plugin-vite",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanlanciaux/validity-verify.git",
+    "directory": "packages/verify-plugin-vite"
+  },
+  "description": "Vite plugin that writes a deterministic .validity/app-manifest.json so Validity's isolated sandbox can mirror your app's real resolution facts.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "test": "node ../../scripts/vitest-run.mjs --passWithNoTests",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "vite": "^5.0.0 || ^6.0.0 || ^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "vite": "^6.0.7"
+  }
+}

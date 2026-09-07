@@ -1,0 +1,45 @@
+{
+  "name": "@validity.ai/verify-plugin-next",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanlanciaux/validity-verify.git",
+    "directory": "packages/verify-plugin-next"
+  },
+  "description": "Next.js config wrapper that writes a deterministic .validity/app-manifest.json so Validity's isolated sandbox can mirror your app's real env, CSS, and path-alias setup.",
+  "keywords": [
+    "next",
+    "nextjs",
+    "validity",
+    "app-manifest",
+    "testing"
+  ],
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -b && tsc -p tsconfig.cjs.json && node ./scripts/finalize-cjs.mjs",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "test": "node ../../scripts/vitest-run.mjs --passWithNoTests",
+    "test:watch": "vitest"
+  }
+}

@@ -1,0 +1,72 @@
+id: spec-contact
+version: 1
+status: frozen
+source:
+  prompt: Contact form accepts an email and POSTs /api/contact
+  createdBy: user
+runtime: web
+targets:
+  components:
+    - src/components/ContactForm.tsx
+criteria:
+  - id: AC-1
+    text: Email field is visible
+    tier: hard
+    checks:
+      - expect:
+          element:
+            role: textbox
+            name: Email
+            state: visible
+  - id: AC-2
+    text: Send button is visible
+    tier: hard
+    checks:
+      - expect:
+          element:
+            role: button
+            name: Send
+            state: visible
+  - id: AC-3
+    text: Submitting a valid email POSTs /api/contact
+    tier: hard
+    checks:
+      - fill:
+          role: textbox
+          name: Email
+          value: a@b.com
+      - click:
+          role: button
+          name: Send
+      - expect:
+          network:
+            method: POST
+            url: /api/contact
+            status: 2xx
+    mocking: required
+hash: sha256-2ef31148579c53a5f4308a85a5dcc8e5bc686ba52ea9d06b27935128bd110fc0
+git:
+  sha: 00df6df65d450e8c34a24f6b3a15c42fa3599df6
+  dirty: true
+  changedFiles:
+    - README.md
+    - package.json
+    - packages/verify-skill/HELP.md
+    - packages/verify-skill/SKILL.md
+    - packages/verify/package.json
+    - packages/verify/src/cli.ts
+    - packages/verify/src/commands/install-wizard.ts
+    - packages/verify/src/help-text.ts
+    - packages/verify/src/usage-cli-reference.test.ts
+    - pnpm-lock.yaml
+    - pnpm-workspace.yaml
+    - .github/
+    - examples/
+    - packages/verify-plugin-expo/README.md
+    - packages/verify-plugin-next/README.md
+    - packages/verify-plugin-vite/README.md
+    - packages/verify/skill/
+rubric:
+  version: "1"
+createdAt: 2026-09-07T00:00:00.000Z
+updatedAt: 2026-09-07T12:42:25.133Z

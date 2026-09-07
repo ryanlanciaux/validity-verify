@@ -1,0 +1,11 @@
+{
+  "name": "@validity.ai/verify-skill",
+  "private": true,
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "Skill that teaches agents how to drive validity verify",
+  "files": [
+    "SKILL.md",
+    "HELP.md"
+  ]
+}

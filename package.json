@@ -1,0 +1,28 @@
+{
+  "name": "validity-verify",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter './packages/*' build",
+    "test": "pnpm -r --workspace-concurrency=1 --filter './packages/*' test",
+    "typecheck": "tsc -b",
+    "audit:packages": "node scripts/check-packages.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "validity": "node packages/verify/dist/cli.js",
+    "validity-mcp": "node packages/verify/dist/mcp/cli.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "eslint": "^9.18.0",
+    "prettier": "^3.4.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.0"
+  }
+}

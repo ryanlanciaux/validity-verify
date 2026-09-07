@@ -1,0 +1,52 @@
+{
+  "name": "@validity.ai/verify-spec",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanlanciaux/validity-verify.git",
+    "directory": "packages/verify-spec"
+  },
+  "type": "module",
+  "private": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./mock-heuristics-cases": {
+      "types": "./dist/mock-heuristics-cases.d.ts",
+      "import": "./dist/mock-heuristics-cases.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "schema"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "test": "node ../../scripts/vitest-run.mjs",
+    "generate:schema": "tsx src/generate-schema.ts && prettier --write schema/validity-spec.schema.json"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@babel/generator": "^7.26.5",
+    "@babel/parser": "^7.26.5",
+    "@babel/traverse": "^7.26.5",
+    "@babel/types": "^7.26.5",
+    "jiti": "^2.4.2",
+    "ts-morph": "^25.0.0",
+    "yaml": "^2.8.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__traverse": "^7.20.6",
+    "tsx": "^4.21.0",
+    "zod-to-json-schema": "^3.25.2"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  // SECOND OUTPUT, SAME SOURCE. `next.config.js` in a package without
+  // `"type": "module"` is CommonJS, and a `require()` of a pure-ESM package
+  // throws ERR_REQUIRE_ESM on every Node before 20.19/22.12 — a hard crash of
+  // the user's `next dev`, which is exactly the failure mode this integration
+  // promises never to cause. `next.config.mjs` / `next.config.ts` want real
+  // ESM (a CJS-only build makes `import withValidity from …` resolve to the
+  // module namespace OBJECT rather than the function). Shipping both formats
+  // is the only shape that is correct from both sides.
+  //
+  // The output lands in `dist/cjs/`, which `scripts/finalize-cjs.mjs` stamps
+  // with its own `{"type": "commonjs"}` package.json so Node reads those `.js`
+  // files as CommonJS despite this package being `"type": "module"`.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    // "Bundler" (the repo default) is only legal with an ESM `module`.
+    "moduleResolution": "Node10",
+    // verbatimModuleSyntax forbids `import`/`export` syntax when emitting CJS.
+    // `isolatedModules` still holds the type-only-import discipline.
+    "verbatimModuleSyntax": false,
+    // Types, declaration maps and the build-info file all come from the ESM
+    // build; this pass emits runtime JS only. `composite` must be off because
+    // composite requires declaration emit — and nothing references this
+    // project, so there is nothing to be composite FOR.
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "outDir": "./dist/cjs"
+  }
+}

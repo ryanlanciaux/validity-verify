@@ -1,0 +1,38 @@
+{
+  "name": "@validity.ai/verify-native",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanlanciaux/validity-verify.git",
+    "directory": "packages/verify-native"
+  },
+  "type": "module",
+  "private": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "templates"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "test": "node ../../scripts/vitest-run.mjs --passWithNoTests"
+  },
+  "dependencies": {
+    "ws": "^8.18.0",
+    "@validity.ai/verify-spec": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.21.0"
+  }
+}

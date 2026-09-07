@@ -1,0 +1,15 @@
+packages:
+  - 'packages/*'
+  - 'examples/*'
+allowBuilds:
+  esbuild: true
+  msw: false
+  sharp: true
+minimumReleaseAgeExclude:
+  - '@tanstack/charts-scales@0.7.2'
+  - '@tanstack/charts@0.7.2'
+packageExtensions:
+  react-native-url-polyfill@*:
+    peerDependenciesMeta:
+      react-native:
+        optional: true

@@ -1,0 +1,640 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://validity.ai/schema/spec/v1.json",
+  "title": "Validity spec",
+  "description": "A Validity spec: the durable, versioned acceptance-criteria record frozen to .validity/specs/<id>/spec.yaml. Mechanically generated from packages/verify-spec/src/spec-schema.ts — do not hand-edit. Cross-field rules this schema cannot express (JSON Schema has no zod-refine equivalent) are enforced at runtime by parseSpec(), along with the freeze/content-hash contract.",
+  "version": "v1",
+  "$ref": "#/definitions/ValiditySpec",
+  "definitions": {
+    "ValiditySpec": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^spec-[A-Za-z0-9_-]+$",
+          "errorMessage": {
+            "pattern": "spec id must match /^spec-[A-Za-z0-9_-]+$/ (no path separators or dots)"
+          }
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "reviewed", "approved", "frozen", "superseded"]
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "prompt": {
+              "type": "string"
+            },
+            "createdBy": {
+              "type": "string",
+              "enum": ["agent", "user"]
+            },
+            "reviewedBy": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "compiledWith": {
+              "type": "string"
+            }
+          },
+          "required": ["prompt", "createdBy"],
+          "additionalProperties": false
+        },
+        "runtime": {
+          "type": "string",
+          "enum": ["web", "native"]
+        },
+        "targets": {
+          "type": "object",
+          "properties": {
+            "components": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "views": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "criteria": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "tier": {
+                "type": "string",
+                "enum": ["hard", "property", "soft"]
+              },
+              "checks": {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "navigate": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": ["url"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["navigate"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "click": {
+                          "type": "object",
+                          "properties": {
+                            "role": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "text": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "placeholder": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "testId": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "nth": {
+                              "type": "integer",
+                              "minimum": 0
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["click"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "press": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "key": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "times": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 25
+                                },
+                                "selector": {
+                                  "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click"
+                                }
+                              },
+                              "required": ["key"],
+                              "additionalProperties": false
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["press"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "hover": {
+                          "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click"
+                        }
+                      },
+                      "required": ["hover"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "fill": {
+                          "type": "object",
+                          "properties": {
+                            "role": {
+                              "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/role"
+                            },
+                            "name": {
+                              "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/name"
+                            },
+                            "text": {
+                              "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/text"
+                            },
+                            "label": {
+                              "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/label"
+                            },
+                            "placeholder": {
+                              "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/placeholder"
+                            },
+                            "testId": {
+                              "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/testId"
+                            },
+                            "nth": {
+                              "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/nth"
+                            },
+                            "value": {
+                              "type": "string"
+                            }
+                          },
+                          "required": ["value"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["fill"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "wait": {
+                          "type": "object",
+                          "properties": {
+                            "ms": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 5000
+                            },
+                            "for": {
+                              "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click"
+                            },
+                            "state": {
+                              "type": "string",
+                              "enum": ["visible", "hidden", "attached"]
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["wait"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "waitForRequest": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "method": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "timeoutMs": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 5000
+                            }
+                          },
+                          "required": ["url"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["waitForRequest"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "select": {
+                          "type": "object",
+                          "properties": {
+                            "selector": {
+                              "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click"
+                            },
+                            "option": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "label": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    "value": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    "index": {
+                                      "type": "integer",
+                                      "minimum": 0
+                                    }
+                                  },
+                                  "additionalProperties": false
+                                }
+                              ]
+                            }
+                          },
+                          "required": ["selector", "option"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["select"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "scroll": {
+                          "type": "object",
+                          "properties": {
+                            "selector": {
+                              "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click"
+                            },
+                            "to": {
+                              "type": "string",
+                              "enum": ["top", "bottom"]
+                            },
+                            "by": {
+                              "type": "object",
+                              "properties": {
+                                "x": {
+                                  "type": "number"
+                                },
+                                "y": {
+                                  "type": "number"
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            "intoView": {
+                              "type": "boolean",
+                              "const": true
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["scroll"],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "expect": {
+                          "type": "object",
+                          "properties": {
+                            "element": {
+                              "type": "object",
+                              "properties": {
+                                "role": {
+                                  "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/role"
+                                },
+                                "name": {
+                                  "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/name"
+                                },
+                                "text": {
+                                  "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/text"
+                                },
+                                "label": {
+                                  "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/label"
+                                },
+                                "placeholder": {
+                                  "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/placeholder"
+                                },
+                                "testId": {
+                                  "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/testId"
+                                },
+                                "nth": {
+                                  "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/checks/items/anyOf/1/properties/click/properties/nth"
+                                },
+                                "state": {
+                                  "type": "string",
+                                  "enum": [
+                                    "visible",
+                                    "hidden",
+                                    "enabled",
+                                    "disabled",
+                                    "checked",
+                                    "focused"
+                                  ]
+                                },
+                                "count": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            "network": {
+                              "type": "object",
+                              "properties": {
+                                "method": {
+                                  "type": "string",
+                                  "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "status": {
+                                  "anyOf": [
+                                    {
+                                      "type": "integer",
+                                      "minimum": 100,
+                                      "maximum": 599
+                                    },
+                                    {
+                                      "type": "string",
+                                      "enum": ["1xx", "2xx", "3xx", "4xx", "5xx"]
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": ["url"],
+                              "additionalProperties": false
+                            },
+                            "console": {
+                              "type": "object",
+                              "properties": {
+                                "errors": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "required": ["errors"],
+                              "additionalProperties": false
+                            },
+                            "screenshot": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "maxDiffPixels": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            "performance": {
+                              "type": "object",
+                              "properties": {
+                                "metric": {
+                                  "type": "string",
+                                  "enum": [
+                                    "load",
+                                    "firstContentfulPaint",
+                                    "ready",
+                                    "mount",
+                                    "update"
+                                  ]
+                                },
+                                "maxMs": {
+                                  "type": "integer",
+                                  "exclusiveMinimum": 0
+                                }
+                              },
+                              "required": ["metric", "maxMs"],
+                              "additionalProperties": false
+                            },
+                            "a11y": {
+                              "type": "object",
+                              "properties": {
+                                "severity": {
+                                  "type": "string",
+                                  "enum": ["minor", "moderate", "serious", "critical"]
+                                },
+                                "maxViolations": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            "command": {
+                              "type": "object",
+                              "properties": {
+                                "run": {
+                                  "type": "string",
+                                  "pattern": "^[A-Za-z0-9_-]{1,64}$",
+                                  "errorMessage": {
+                                    "pattern": "run must be a command NAME from .validity/config.ts `commands` (e.g. 'typecheck') — no shell strings in specs"
+                                  }
+                                },
+                                "exitCode": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 255
+                                }
+                              },
+                              "required": ["run"],
+                              "additionalProperties": false
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["expect"],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "mocking": {
+                "type": "string",
+                "enum": ["required", "none"]
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["blocking", "advisory"]
+              },
+              "softThreshold": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "dataState": {
+                "type": "string",
+                "enum": ["loading", "empty", "error", "populated"]
+              }
+            },
+            "required": ["id", "text", "tier"],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "conditions": {
+          "type": "object",
+          "properties": {
+            "viewports": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "exclusiveMinimum": 0
+              }
+            },
+            "network": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "dataStates": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ValiditySpec/properties/criteria/items/properties/dataState"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "hash": {
+          "type": "string"
+        },
+        "supersedes": {
+          "type": "string"
+        },
+        "git": {
+          "type": "object",
+          "properties": {
+            "sha": {
+              "type": "string"
+            },
+            "dirty": {
+              "type": "boolean"
+            },
+            "changedFiles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "changedFilesTruncated": {
+              "type": "boolean"
+            }
+          },
+          "required": ["sha", "dirty", "changedFiles"],
+          "additionalProperties": false
+        },
+        "probation": {
+          "type": "object",
+          "properties": {
+            "since": {
+              "type": "string"
+            },
+            "batchId": {
+              "type": "string"
+            }
+          },
+          "required": ["since"],
+          "additionalProperties": false
+        },
+        "rubric": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "string"
+            }
+          },
+          "required": ["version"],
+          "additionalProperties": false
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "version", "status", "source", "runtime", "criteria", "createdAt"],
+      "additionalProperties": false
+    }
+  }
+}

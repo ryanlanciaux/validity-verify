@@ -1,0 +1,48 @@
+{
+  "name": "@validity.ai/verify",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanlanciaux/validity-verify.git",
+    "directory": "packages/verify"
+  },
+  "type": "module",
+  "private": false,
+  "bin": {
+    "validity": "./dist/cli.js",
+    "validity-mcp": "./dist/mcp/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "skill"
+  ],
+  "scripts": {
+    "build": "tsc -b && chmod +x dist/cli.js dist/mcp/cli.js",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "test": "node ../../scripts/vitest-run.mjs --passWithNoTests"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "cac": "^6.7.14",
+    "chokidar": "^4.0.3",
+    "consola": "^3.3.3",
+    "picocolors": "^1.1.1",
+    "playwright": "^1.49.1",
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.24.1",
+    "@validity.ai/verify-spec": "workspace:*",
+    "@validity.ai/verify-web": "workspace:*",
+    "@validity.ai/verify-native": "workspace:*",
+    "@validity.ai/verify-report": "workspace:*"
+  }
+}

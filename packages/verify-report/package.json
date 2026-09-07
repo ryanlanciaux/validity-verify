@@ -1,0 +1,40 @@
+{
+  "name": "@validity.ai/verify-report",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanlanciaux/validity-verify.git",
+    "directory": "packages/verify-report"
+  },
+  "type": "module",
+  "private": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/.tsbuildinfo",
+    "THIRD_PARTY_NOTICES.txt"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "generate:fonts": "node scripts/generate-fonts.mjs",
+    "test": "node ../../scripts/vitest-run.mjs --passWithNoTests"
+  },
+  "dependencies": {
+    "@tanstack/charts": "0.7.2",
+    "@tanstack/charts-scales": "0.7.2",
+    "@validity.ai/verify-spec": "workspace:*"
+  },
+  "devDependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0"
+  }
+}

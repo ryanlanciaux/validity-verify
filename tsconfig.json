@@ -1,0 +1,29 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/verify-spec"
+    },
+    {
+      "path": "./packages/verify-report"
+    },
+    {
+      "path": "./packages/verify-web"
+    },
+    {
+      "path": "./packages/verify-native"
+    },
+    {
+      "path": "./packages/verify-plugin-vite"
+    },
+    {
+      "path": "./packages/verify-plugin-next"
+    },
+    {
+      "path": "./packages/verify-plugin-expo"
+    },
+    {
+      "path": "./packages/verify"
+    }
+  ]
+}

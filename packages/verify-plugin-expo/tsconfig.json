@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    // COMMONJS ON PURPOSE — every other package here is ESM. Expo resolves a
+    // config plugin with `require()` (@expo/config-plugins'
+    // `requirePluginFile`), from a `getConfig()` call that is synchronous all
+    // the way down. A `"type": "module"` package would put that resolution at
+    // the mercy of Node's require(ESM) support, which varies by the Node the
+    // user's Expo CLI happens to run on. CJS just works everywhere Expo runs.
+    "module": "CommonJS",
+    // "Bundler" (the repo default) is only legal with an ESM `module`.
+    "moduleResolution": "Node10",
+    // verbatimModuleSyntax forbids `import`/`export` syntax when emitting CJS
+    // (it would require `import x = require(...)`), so it is off for this one
+    // package. `isolatedModules` still holds the type-only-import discipline.
+    "verbatimModuleSyntax": false
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}
