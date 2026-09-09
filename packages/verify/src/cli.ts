@@ -13,6 +13,7 @@ import { runClean } from './commands/clean.js';
 import { runCompare } from './commands/compare.js';
 import { runExport } from './commands/export.js';
 import { runInit } from './commands/init.js';
+import { runInstallBrowser } from './commands/install-browser.js';
 import { runJudgePack } from './commands/judge-pack.js';
 import { runJudgeCli } from './commands/judge.js';
 import { runInstallWizard } from './commands/install-wizard.js';
@@ -27,6 +28,11 @@ import { runHelp } from './commands/help.js';
 import { cliVersionString } from './version.js';
 
 const cli = cac('validity');
+
+cli
+  .command('install-browser', 'Install Chromium matching this Validity installation')
+  .option('--with-deps', 'Also install system browser dependencies (Linux CI)')
+  .action((opts: { withDeps?: boolean }) => runInstallBrowser(opts));
 
 cli
   .command(
@@ -88,7 +94,10 @@ cli
     'Re-run the post-install setup: pick MCP hosts, install skills, resolve PATH conflicts',
   )
   .option('--non-interactive', 'Skip prompts (for CI / unattended installs)')
-  .option('--skip-banner', 'Skip the intro banner (used when a parent installer already printed it)')
+  .option(
+    '--skip-banner',
+    'Skip the intro banner (used when a parent installer already printed it)',
+  )
   .action(async (opts: { nonInteractive?: boolean; skipBanner?: boolean }) => {
     await runInstallWizard({
       nonInteractive: opts.nonInteractive,

@@ -176,28 +176,44 @@ describe('resolvePluginTargets', () => {
 describe('addFileDependency', () => {
   it('appends to an existing dependencies block, preserving other deps + formatting', () => {
     const src = `{\n  "name": "app",\n  "dependencies": {\n    "react": "^18.0.0"\n  }\n}\n`;
-    const r = addFileDependency(src, '@validity.ai/verify-plugin-vite', 'file:.validity/plugins/vite');
+    const r = addFileDependency(
+      src,
+      '@validity.ai/verify-plugin-vite',
+      'file:.validity/plugins/vite',
+    );
     expect(r.changed).toBe(true);
     expect(r.reason).toBe('added');
     const parsed = JSON.parse(r.source);
     expect(parsed.dependencies.react).toBe('^18.0.0');
-    expect(parsed.dependencies['@validity.ai/verify-plugin-vite']).toBe('file:.validity/plugins/vite');
+    expect(parsed.dependencies['@validity.ai/verify-plugin-vite']).toBe(
+      'file:.validity/plugins/vite',
+    );
     expect(r.source).toContain('    "react": "^18.0.0"');
   });
 
   it('creates a dependencies block when absent', () => {
     const src = `{\n  "name": "app",\n  "version": "1.0.0"\n}\n`;
-    const r = addFileDependency(src, '@validity.ai/verify-plugin-expo', 'file:.validity/plugins/expo');
+    const r = addFileDependency(
+      src,
+      '@validity.ai/verify-plugin-expo',
+      'file:.validity/plugins/expo',
+    );
     expect(r.changed).toBe(true);
     const parsed = JSON.parse(r.source);
-    expect(parsed.dependencies).toEqual({ '@validity.ai/verify-plugin-expo': 'file:.validity/plugins/expo' });
+    expect(parsed.dependencies).toEqual({
+      '@validity.ai/verify-plugin-expo': 'file:.validity/plugins/expo',
+    });
     expect(parsed.name).toBe('app');
     expect(parsed.version).toBe('1.0.0');
   });
 
   it('is idempotent — the exact same dep+spec already present is a no-op', () => {
     const src = `{\n  "dependencies": {\n    "@validity.ai/verify-plugin-vite": "file:.validity/plugins/vite"\n  }\n}\n`;
-    const r = addFileDependency(src, '@validity.ai/verify-plugin-vite', 'file:.validity/plugins/vite');
+    const r = addFileDependency(
+      src,
+      '@validity.ai/verify-plugin-vite',
+      'file:.validity/plugins/vite',
+    );
     expect(r.changed).toBe(false);
     expect(r.reason).toBe('already');
     expect(r.source).toBe(src);
@@ -205,7 +221,11 @@ describe('addFileDependency', () => {
 
   it('rejects unparseable JSON without writing anything', () => {
     const src = `{ not valid json`;
-    const r = addFileDependency(src, '@validity.ai/verify-plugin-vite', 'file:.validity/plugins/vite');
+    const r = addFileDependency(
+      src,
+      '@validity.ai/verify-plugin-vite',
+      'file:.validity/plugins/vite',
+    );
     expect(r.changed).toBe(false);
     expect(r.reason).toBe('unparseable');
     expect(r.source).toBe(src);
@@ -213,10 +233,16 @@ describe('addFileDependency', () => {
 
   it('4-space indent files stay 4-space indented', () => {
     const src = `{\n    "name": "app",\n    "dependencies": {\n        "react": "^18.0.0"\n    }\n}\n`;
-    const r = addFileDependency(src, '@validity.ai/verify-plugin-vite', 'file:.validity/plugins/vite');
+    const r = addFileDependency(
+      src,
+      '@validity.ai/verify-plugin-vite',
+      'file:.validity/plugins/vite',
+    );
     expect(r.changed).toBe(true);
     expect(r.source).toContain('        "react": "^18.0.0"');
-    expect(r.source).toContain('        "@validity.ai/verify-plugin-vite": "file:.validity/plugins/vite"');
+    expect(r.source).toContain(
+      '        "@validity.ai/verify-plugin-vite": "file:.validity/plugins/vite"',
+    );
   });
 });
 
@@ -440,7 +466,9 @@ describe('wireNextConfigSource', () => {
     ].join('\n');
     const r = wireNextConfigSource(src);
     expect(r.changed).toBe(true);
-    expect(r.source).toContain("const { withValidity } = require('@validity.ai/verify-plugin-next');");
+    expect(r.source).toContain(
+      "const { withValidity } = require('@validity.ai/verify-plugin-next');",
+    );
     expect(r.source).not.toContain('import {');
     expect(r.source).toContain('const nextConfig = withValidity({});');
   });
@@ -458,7 +486,9 @@ describe('wireNextConfigSource', () => {
     const r = wireNextConfigSource(src);
     expect(r.changed).toBe(true);
     expect(r.source).toContain('module.exports = withValidity({');
-    expect(r.source).toContain("const { withValidity } = require('@validity.ai/verify-plugin-next');");
+    expect(r.source).toContain(
+      "const { withValidity } = require('@validity.ai/verify-plugin-next');",
+    );
   });
 
   it('inserts the require after the LAST existing require line', () => {
@@ -610,14 +640,17 @@ describe('resolvePluginSource', () => {
 
   it('falls back to npm root -g when module-relative candidates miss', () => {
     const npmRoot = mkdtemp();
-    mkdirSync(resolve(npmRoot, 'validity/plugins'), { recursive: true });
-    writeFileSync(resolve(npmRoot, 'validity/plugins/vite.tgz'), 'fake-tgz-bytes');
+    mkdirSync(resolve(npmRoot, '@validity.ai/verify/plugins'), { recursive: true });
+    writeFileSync(resolve(npmRoot, '@validity.ai/verify/plugins/vite.tgz'), 'fake-tgz-bytes');
     const emptyModuleDir = mkdtemp();
     const src = resolvePluginSource('vite', {
       moduleDir: emptyModuleDir,
       npmRootGlobal: () => npmRoot,
     });
-    expect(src).toEqual({ kind: 'tgz', path: resolve(npmRoot, 'validity/plugins/vite.tgz') });
+    expect(src).toEqual({
+      kind: 'tgz',
+      path: resolve(npmRoot, '@validity.ai/verify/plugins/vite.tgz'),
+    });
   });
 
   it('falls back to the in-repo dev package dir when dist/ + package.json exist', () => {
@@ -648,7 +681,9 @@ describe('resolvePluginSource', () => {
     mkdirSync(verifyDist, { recursive: true });
     mkdirSync(resolve(pluginDir, 'dist'), { recursive: true });
     writeFileSync(resolve(pluginDir, 'package.json'), '{"name":"@validity.ai/verify-plugin-next"}');
-    expect(resolvePluginSource('next', { moduleDir: verifyDist, npmRootGlobal: () => null })).toEqual({
+    expect(
+      resolvePluginSource('next', { moduleDir: verifyDist, npmRootGlobal: () => null }),
+    ).toEqual({
       kind: 'dir',
       path: pluginDir,
     });
@@ -699,7 +734,11 @@ describe.skipIf(!hasTar)('extractPluginPackage', () => {
     const pkgDir = mkdtemp('validity-plugin-fixture-');
     writeFileSync(
       resolve(pkgDir, 'package.json'),
-      JSON.stringify({ name: '@validity.ai/verify-plugin-vite', version: '0.0.1', main: 'index.js' }),
+      JSON.stringify({
+        name: '@validity.ai/verify-plugin-vite',
+        version: '0.0.1',
+        main: 'index.js',
+      }),
     );
     writeFileSync(resolve(pkgDir, 'index.js'), 'module.exports = () => ({ name: "validity" });\n');
     const outDir = mkdtemp('validity-plugin-pack-out-');
@@ -747,24 +786,33 @@ describe.skipIf(!hasTar)('extractPluginPackage', () => {
 });
 
 describe('extractPluginPackage (dir source)', () => {
-  it('copies a directory source, excluding node_modules and *.test.ts', () => {
-    const pkgDir = mkdtemp();
-    writeFileSync(resolve(pkgDir, 'package.json'), '{"name":"@validity.ai/verify-plugin-expo"}');
-    mkdirSync(resolve(pkgDir, 'dist'), { recursive: true });
-    writeFileSync(resolve(pkgDir, 'dist/index.js'), 'module.exports = {};\n');
-    mkdirSync(resolve(pkgDir, 'node_modules/leftpad'), { recursive: true });
-    writeFileSync(resolve(pkgDir, 'node_modules/leftpad/index.js'), '');
-    writeFileSync(resolve(pkgDir, 'index.test.ts'), '');
-
-    const cwd = mkdtemp();
-    const source: PluginSource = { kind: 'dir', path: pkgDir };
-    const r = extractPluginPackage(cwd, 'expo', source);
-    expect(r.action).toBe('wrote');
-    expect(existsSync(resolve(cwd, '.validity/plugins/expo/package.json'))).toBe(true);
-    expect(existsSync(resolve(cwd, '.validity/plugins/expo/dist/index.js'))).toBe(true);
-    expect(existsSync(resolve(cwd, '.validity/plugins/expo/node_modules'))).toBe(false);
-    expect(existsSync(resolve(cwd, '.validity/plugins/expo/index.test.ts'))).toBe(false);
+  it('does not report success for an empty package', () => {
+    const result = extractPluginPackage(mkdtemp(), 'vite', { kind: 'dir', path: mkdtemp() });
+    expect(result.action).toBe('error');
+    expect(result.message).toContain('no package.json');
   });
+  it.each(['package', 'lib/node_modules/@validity.ai/verify-plugin-expo'])(
+    'copies %s, excluding only nested node_modules and tests',
+    (location) => {
+      const pkgDir = resolve(mkdtemp(), location);
+      mkdirSync(pkgDir, { recursive: true });
+      writeFileSync(resolve(pkgDir, 'package.json'), '{"name":"@validity.ai/verify-plugin-expo"}');
+      mkdirSync(resolve(pkgDir, 'dist'), { recursive: true });
+      writeFileSync(resolve(pkgDir, 'dist/index.js'), 'module.exports = {};\n');
+      mkdirSync(resolve(pkgDir, 'node_modules/leftpad'), { recursive: true });
+      writeFileSync(resolve(pkgDir, 'node_modules/leftpad/index.js'), '');
+      writeFileSync(resolve(pkgDir, 'index.test.ts'), '');
+
+      const cwd = mkdtemp();
+      const source: PluginSource = { kind: 'dir', path: pkgDir };
+      const r = extractPluginPackage(cwd, 'expo', source);
+      expect(r.action).toBe('wrote');
+      expect(existsSync(resolve(cwd, '.validity/plugins/expo/package.json'))).toBe(true);
+      expect(existsSync(resolve(cwd, '.validity/plugins/expo/dist/index.js'))).toBe(true);
+      expect(existsSync(resolve(cwd, '.validity/plugins/expo/node_modules'))).toBe(false);
+      expect(existsSync(resolve(cwd, '.validity/plugins/expo/index.test.ts'))).toBe(false);
+    },
+  );
 });
 
 /* ------------------------------------------------------------------ */

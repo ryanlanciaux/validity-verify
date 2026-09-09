@@ -33,6 +33,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm build
       - run: pnpm audit:packages
+      - run: node scripts/check-release.mjs
       - run: pnpm --filter @validity.ai/verify exec playwright install chromium --with-deps
       - run: pnpm --filter @validity.ai/verify-web exec node node_modules/@playwright/test/cli.js install chromium --with-deps
       - run: pnpm test

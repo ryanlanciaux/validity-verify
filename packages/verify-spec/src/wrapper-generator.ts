@@ -253,7 +253,7 @@ export interface GenerateWrapperOptions {
 export function generateWrapperSource(opts: GenerateWrapperOptions): GenerateWrapperResult {
   const { projectRoot } = opts;
   const wrapperOutPath = opts.wrapperOutPath ?? resolve(projectRoot, '.validity/wrapper.gen.tsx');
-  const validityVersion = opts.validityVersion ?? '0.0.1';
+  const validityVersion = opts.validityVersion ?? '0.0.2';
 
   const entryFile = opts.entryFileOverride ?? findEntryFile(projectRoot);
   if (!entryFile) {
@@ -2369,8 +2369,7 @@ function collectDefaultImports(jsxRoot: NodePath<t.Node>): {
   relativeDefaultImports: Set<string>;
 } {
   const file = (jsxRoot as NodePath).findParent((p) => p.isProgram())?.node as
-    | t.Program
-    | undefined;
+    t.Program | undefined;
   const defaultImports = new Map<string, string>();
   const relativeDefaultImports = new Set<string>();
   if (!file) return { defaultImports, relativeDefaultImports };

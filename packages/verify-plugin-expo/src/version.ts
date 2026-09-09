@@ -7,4 +7,4 @@
  * tarball. `version.test.ts` byte-matches it against package.json, which is the
  * same "mirror + test the mirror" discipline the skill/help-text twins use.
  */
-export const PLUGIN_VERSION = '0.0.1';
+export const PLUGIN_VERSION = '0.0.2';

@@ -115,7 +115,8 @@ export const COMPANION_BRIDGE_URL = `ws://localhost:${COMPANION_BRIDGE_PORT}`;
  * existing installs pay ONE rebuild, not several.
  */
 // rev 6: companion branding no longer references uncopied host icon assets.
-export const COMPANION_BUILD_REVISION = 6;
+// rev 7: do not reapply the host's Validity scheme plugin to the companion.
+export const COMPANION_BUILD_REVISION = 7;
 
 /**
  * What the readiness checklist tells the user when the rebuild is
@@ -126,7 +127,7 @@ export const COMPANION_BUILD_REVISION = 6;
 export const COMPANION_REVISION_REBUILD_REASON =
   'companion config changed: splash screen removed for reliable reloads, and the companion ' +
   'now registers its own unique URL scheme (deep links can no longer open your app by ' +
-  'mistake), and host icon assets are no longer inherited — rebuild once';
+  'mistake), and host icon assets and the host-only Validity scheme plugin are no longer inherited — rebuild once';
 
 /**
  * Env for the Metro-SERVING steps (`expo start` / `expo run`). We deliberately
@@ -390,8 +391,9 @@ function readHostExpoConfig(projectRoot: string): Record<string, unknown> {
 }
 
 /** The exact predicate the generated app.config.js uses to strip the splash plugin. */
-function isSplashPlugin(p: unknown): boolean {
-  return (Array.isArray(p) ? p[0] : p) === 'expo-splash-screen';
+function isHostOnlyPlugin(p: unknown): boolean {
+  const name = Array.isArray(p) ? p[0] : p;
+  return name === 'expo-splash-screen' || name === '@validity.ai/verify-plugin-expo';
 }
 
 /**
@@ -452,14 +454,16 @@ function computeBuildInputs(
   scheme: string,
 ): CompanionBuildInputs {
   const hostExpo = readHostExpoConfig(projectRoot);
-  // Post-companion-override plugins: the splash strip mirrors appConfigJs, and
+  // Post-companion-override plugins: the host-only strip mirrors appConfigJs, and
   // the JSON round-trip normalizes non-serializable plugin options (functions
   // → null) ONCE, so the live value always compares equal to the marker's
   // JSON-parsed copy instead of spuriously reading "options changed".
   const rawPlugins = Array.isArray(hostExpo.plugins) ? hostExpo.plugins : [];
   let plugins: unknown[] = [];
   try {
-    plugins = JSON.parse(JSON.stringify(rawPlugins.filter((p) => !isSplashPlugin(p)))) as unknown[];
+    plugins = JSON.parse(
+      JSON.stringify(rawPlugins.filter((p) => !isHostOnlyPlugin(p))),
+    ) as unknown[];
   } catch {
     plugins = [];
   }
@@ -629,12 +633,14 @@ module.exports = () => ({
   name: ${JSON.stringify(appName)},
   slug: 'validity-playground',
   scheme: ${JSON.stringify(scheme)},
-  // NO SPLASH SCREEN: strip exactly expo-splash-screen from the inherited
+  // The Validity Expo plugin belongs to the host; the companion already owns
+  // its scheme and must not reapply the host's scheme props or collision warning.
+  // NO SPLASH SCREEN: strip expo-splash-screen from the inherited
   // plugins (string or [name, options] entries) and null every splash config,
   // so the companion binary cannot re-present a launch screen on reload —
   // the bridge's in-place reload depends on this. The host app keeps its own.
   plugins: (host.plugins || []).filter(
-    (p) => (Array.isArray(p) ? p[0] : p) !== 'expo-splash-screen',
+    (p) => !['expo-splash-screen', '@validity.ai/verify-plugin-expo'].includes(Array.isArray(p) ? p[0] : p),
   ),
   splash: undefined,
   // The separate companion does not need host branding. Relative icon paths

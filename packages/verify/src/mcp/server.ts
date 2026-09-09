@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process';
+import { cliVersionString } from '../version.js';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -55,7 +56,6 @@ import {
   createSpec,
   detectAppTarget,
   EXPO_WEB_OPT_IN_HINT,
-  formatBuildVersion,
   freezeSpec,
   isSpecId,
   planCriteriaToSpecCriteria,
@@ -7806,7 +7806,7 @@ export async function startMcpServer(): Promise<void> {
   // tsc) — surfaced in the MCP handshake AND recorded to ~/.validity/
   // mcp-runtime.json so `validity doctor` can flag a host still running a
   // pre-reinstall server.
-  const version = formatBuildVersion('0.0.1');
+  const version = cliVersionString();
   const server = new Server({ name: 'validity', version }, { capabilities: { tools: {} } });
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOL_DEFINITIONS }));

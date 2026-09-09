@@ -1,6 +1,6 @@
 {
   "name": "@validity.ai/verify",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -24,10 +24,12 @@
   "files": [
     "dist",
     "!dist/.tsbuildinfo",
-    "skill"
+    "skill",
+    "plugins/*.tgz"
   ],
   "scripts": {
     "build": "tsc -b && chmod +x dist/cli.js dist/mcp/cli.js",
+    "prepack": "node ../../scripts/stage-plugins.mjs",
     "clean": "rm -rf dist *.tsbuildinfo",
     "test": "node ../../scripts/vitest-run.mjs --passWithNoTests"
   },

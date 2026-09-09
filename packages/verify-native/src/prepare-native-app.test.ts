@@ -144,12 +144,12 @@ describe('prepareNativeApp', () => {
     );
   });
 
-  it('strips exactly expo-splash-screen from inherited plugins and nulls every splash config', () => {
+  it('strips host-only plugins and nulls every splash config without editing the host', () => {
     // The companion is built WITHOUT a splash screen so the bridge's in-place
     // reload can never strand behind a re-presented launch screen (the bug the
     // old terminate+cold-launch ladder worked around). Both plugin entry
-    // shapes (string and [name, options]) must be stripped — and ONLY
-    // expo-splash-screen; every other inherited plugin must survive.
+    // shapes must be stripped, along with Validity's host-only scheme plugin.
+    // Other inherited plugins must survive.
     const root = project(
       {
         'src/Button.tsx': BUTTON,
@@ -160,6 +160,8 @@ describe('prepareNativeApp', () => {
               'expo-font',
               ['expo-splash-screen', { backgroundColor: '#ffffff' }],
               'expo-splash-screen',
+              '@validity.ai/verify-plugin-expo',
+              ['@validity.ai/verify-plugin-expo', { scheme: 'host-app' }],
               ['expo-camera', { cameraPermission: 'x' }],
             ],
             splash: { image: './assets/splash.png' },
@@ -183,6 +185,9 @@ describe('prepareNativeApp', () => {
     };
     const pluginNames = cfg.plugins.map((p) => (Array.isArray(p) ? p[0] : p));
     expect(pluginNames).toEqual(['expo-font', 'expo-camera']);
+    const hostPlugins = JSON.parse(readFileSync(join(root, 'app.json'), 'utf8')).expo.plugins;
+    expect(hostPlugins).toContain('@validity.ai/verify-plugin-expo');
+    expect(hostPlugins).toContainEqual(['@validity.ai/verify-plugin-expo', { scheme: 'host-app' }]);
     expect(cfg.splash).toBeUndefined();
     expect(cfg.ios.splash).toBeUndefined();
     expect(cfg.android.splash).toBeUndefined();

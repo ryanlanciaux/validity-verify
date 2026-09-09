@@ -109,6 +109,26 @@ describe('startDevServer — browse API routes survive Vite SPA fallback', () =>
     rmSync(projectRoot, { recursive: true, force: true });
   });
 
+  it('transforms sandbox TypeScript when the project root is a symlink', async () => {
+    const links = mkdtempSync(resolve(tmpdir(), 'validity-linked-root-'));
+    try {
+      const linkedRoot = resolve(links, 'app');
+      symlinkSync(projectRoot, linkedRoot, 'dir');
+      writeFileSync(
+        resolve(projectRoot, 'node_modules/.validity/probe.ts'),
+        'export const answer: number = 42;',
+      );
+      dev = await startDevServer(linkedRoot);
+      const response = await fetch(`${dev.url}/probe.ts`);
+      expect(response.status).toBe(200);
+      const code = await response.text();
+      expect(code).toContain('42');
+      expect(code).not.toContain(': number');
+    } finally {
+      rmSync(links, { recursive: true, force: true });
+    }
+  });
+
   it('guards browse reads/writes and restricts props to physical catalog files', async () => {
     dev = await startDevServer(projectRoot, { persist: true, config: VALIDITY_CONFIG });
     const api = `${dev.url}/__validity/api`;

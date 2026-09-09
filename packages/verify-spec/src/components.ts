@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process';
+import { gitWorkingTreeChanges } from './git.js';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { parse } from '@babel/parser';
@@ -16,19 +16,7 @@ export interface SelectComponentsArgs {
 }
 
 export function getChangedFilesFromGit(projectRoot: string): string[] {
-  try {
-    const diff = execSync('git diff --name-only HEAD', {
-      cwd: projectRoot,
-      encoding: 'utf-8',
-    });
-    const untracked = execSync('git ls-files --others --exclude-standard', {
-      cwd: projectRoot,
-      encoding: 'utf-8',
-    });
-    return [...diff.split('\n'), ...untracked.split('\n')].map((s) => s.trim()).filter(Boolean);
-  } catch {
-    return [];
-  }
+  return gitWorkingTreeChanges(projectRoot);
 }
 
 export function isReactComponentFile(absolutePath: string): boolean {
@@ -74,8 +62,7 @@ export function isReactComponentFile(absolutePath: string): boolean {
     if (n.type === 'JSXElement' || n.type === 'JSXFragment') return true;
     if (n.type === 'CallExpression') {
       const callee = n.callee as
-        | undefined
-        | { type?: string; name?: string; property?: { type?: string; name?: string } };
+        undefined | { type?: string; name?: string; property?: { type?: string; name?: string } };
       if (callee?.type === 'Identifier' && callee.name === 'createElement') return true;
       if (
         callee?.type === 'MemberExpression' &&

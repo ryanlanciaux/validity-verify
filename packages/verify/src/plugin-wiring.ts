@@ -217,7 +217,7 @@ export function resolvePluginSource(
   const npmRootGlobal = opts.npmRootGlobal ?? defaultNpmRootGlobal;
   const npmRoot = npmRootGlobal();
   if (npmRoot) {
-    const p = resolve(npmRoot, 'validity/plugins', `${shortName}.tgz`);
+    const p = resolve(npmRoot, '@validity.ai/verify/plugins', `${shortName}.tgz`);
     checked.push(p);
     if (existsSync(p)) return { kind: 'tgz', path: p };
   }
@@ -277,8 +277,12 @@ export function extractPluginPackage(
       cpSync(source.path, destDir, {
         recursive: true,
         filter: (src) =>
-          !/(^|[\\/])node_modules([\\/]|$)/.test(src) && !/\.test\.[tj]sx?$/.test(src),
+          !/(^|[\\/])node_modules([\\/]|$)/.test(relative(source.path, src)) &&
+          !/\.test\.[tj]sx?$/.test(relative(source.path, src)),
       });
+    }
+    if (!existsSync(resolve(destDir, 'package.json'))) {
+      throw new Error(`Plugin extraction produced no package.json: ${relDest}`);
     }
     return { action: 'wrote', path: relDest };
   } catch (err) {

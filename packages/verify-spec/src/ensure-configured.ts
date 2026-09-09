@@ -108,7 +108,7 @@ export async function ensureValidityConfigured(
 ): Promise<EnsureResult> {
   const startedAt = performance.now();
   const { projectRoot, force = false } = args;
-  const validityVersion = args.validityVersion ?? readValidityVersion(projectRoot) ?? '0.0.1';
+  const validityVersion = args.validityVersion ?? readValidityVersion(projectRoot) ?? '0.0.2';
 
   const wrapperGenPath = resolve(projectRoot, WRAPPER_GEN_FILENAME);
   const wrapperUserPath = resolve(projectRoot, WRAPPER_USER_FILENAME);
@@ -218,10 +218,7 @@ export async function ensureValidityConfigured(
   // providers render against mocks on the very first verify.
   if (!configExists) {
     autoMock = planAutoMock(projectRoot);
-    writeFileSync(
-      configPath,
-      renderAutoMockConfigSource(projectRoot),
-    );
+    writeFileSync(configPath, renderAutoMockConfigSource(projectRoot));
     generatedFiles.push({ path: relForReport(configPath, projectRoot), action: 'wrote' });
     // Surface anything network mocking can't satisfy (WebSocket/realtime
     // transports, auth SDKs needing a client key) as a setup warning so

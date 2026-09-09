@@ -658,7 +658,7 @@ export async function runDoctor(
   // `executablePath()` returns a string even when the browser hasn't been downloaded,
   // so we have to existsSync() it to know it'll actually launch.
   let playwrightOk = false;
-  let playwrightDetail = 'not detected — run `npx playwright install chromium`';
+  let playwrightDetail = 'not detected — run `validity install-browser`';
   try {
     const playwright = await import('playwright');
     const exe = playwright.chromium.executablePath?.();
@@ -666,7 +666,7 @@ export async function runDoctor(
       playwrightOk = true;
       playwrightDetail = `installed (${exe})`;
     } else if (exe) {
-      playwrightDetail = `path resolved but binary missing — run \`npx playwright install chromium\``;
+      playwrightDetail = `path resolved but binary missing — run \`validity install-browser\``;
     }
   } catch {
     // module not installed — playwright is a CLI dep so this should never fire,

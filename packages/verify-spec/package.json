@@ -1,6 +1,6 @@
 {
   "name": "@validity.ai/verify-spec",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -27,7 +27,8 @@
     "schema"
   ],
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc -b && node ../../scripts/stamp-build.mjs",
+    "prepack": "node ../../scripts/stamp-build.mjs",
     "clean": "rm -rf dist *.tsbuildinfo",
     "test": "node ../../scripts/vitest-run.mjs",
     "generate:schema": "tsx src/generate-schema.ts && prettier --write schema/validity-spec.schema.json"

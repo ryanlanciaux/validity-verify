@@ -35,9 +35,20 @@ Validity is alpha software for trusted local projects, not a sandbox. See [Secur
 
 ## Web (Vite / Next)
 
+The isolation sandbox uses **Vite 6**. Vite 8 / Rolldown plugins are not
+compatible yet (including the current `create-vite` default). For a React Vite
+app, use the tested pair before running `validity init`:
+
+```sh
+npm install -D vite@6.4.3 @vitejs/plugin-react@4.7.0
+```
+
+`validity install-browser` installs Chromium using Validity's own Playwright
+version; no globally exposed `playwright` binary or separate `npx` install is needed.
+
 ```sh
 npm install -g @validity.ai/verify
-npx playwright install chromium
+validity install-browser
 validity install-wizard
 ```
 
@@ -71,7 +82,7 @@ CI:
   with:
     node-version: 22
 - run: npm install -g @validity.ai/verify
-- run: npx playwright install chromium
+- run: validity install-browser --with-deps
 - run: validity verify --all --report-html validity-report.html --check-output validity-check.json
 ```
 
@@ -94,7 +105,10 @@ validity init
 
 That pins the project to the device (`renderMode: 'native'`). Plugin wiring is a
 safe-edit or a printed paste stanza — an Ignite `app.json` without an `"expo"` key
-cannot be auto-wired.
+cannot be auto-wired. Add `"@validity.ai/verify-plugin-expo"` to the `plugins`
+array in the app's effective Expo config (often `app.config.ts` in Ignite),
+then install dependencies. Do not add an `"expo"` wrapper to Ignite's metadata
+just to satisfy auto-wiring.
 
 Boot a simulator or emulator **before** the first native command — there is nothing
 to install onto otherwise:
@@ -134,6 +148,7 @@ Xcode, or Android with the SDK + an AVD (`--native-avd` / `--native-apk`).
 
 | Command                                        | What                                                                |
 | ---------------------------------------------- | ------------------------------------------------------------------- |
+| `validity install-browser`                     | Install matching Chromium (`--with-deps` for Linux CI)              |
 | `validity init`                                | Scaffold `.validity/`                                               |
 | `validity start`                               | Next setup step                                                     |
 | `validity doctor`                              | Local diagnostics                                                   |

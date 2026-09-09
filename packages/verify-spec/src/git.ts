@@ -266,7 +266,11 @@ export function gitChangedFilesSince(projectRoot: string, fromSha: string): stri
  * is the full set of edits a soft score may have gone stale against.
  */
 export function gitWorkingTreeChanges(projectRoot: string): string[] {
-  const tracked = safeExecRaw(['diff', '--name-only', '-z', 'HEAD'], projectRoot);
+  const hasHead = safeExec(['rev-parse', '--verify', 'HEAD'], projectRoot) !== undefined;
+  const tracked = safeExecRaw(
+    hasHead ? ['diff', '--name-only', '-z', 'HEAD'] : ['ls-files', '--cached', '-z'],
+    projectRoot,
+  );
   const untracked = safeExecRaw(['ls-files', '--others', '--exclude-standard', '-z'], projectRoot);
   const split = (raw: string | undefined): string[] =>
     raw ? raw.split('\0').filter((l) => l.length > 0) : [];

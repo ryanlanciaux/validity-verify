@@ -252,6 +252,20 @@ async function loadUserViteConfig(projectRoot: string): Promise<UserConfig> {
   for (const name of VITE_CONFIG_NAMES) {
     const candidate = resolve(projectRoot, name);
     if (existsSync(candidate)) {
+      let viteVersion: string | undefined;
+      try {
+        const require = createRequire(resolve(projectRoot, 'package.json'));
+        viteVersion = require('vite/package.json').version;
+      } catch {
+        // Non-Vite apps can still use the bundled sandbox.
+      }
+      if (viteVersion && Number.parseInt(viteVersion, 10) >= 8) {
+        throw new Error(
+          `Validity's Vite 6 sandbox cannot load Vite ${viteVersion} / Rolldown plugins. ` +
+            'Use npm install -D vite@6.4.3 @vitejs/plugin-react@4.7.0 in the app, then retry. ' +
+            'Vite 8 sandbox support is not available yet.',
+        );
+      }
       const loaded = await loadConfigFromFile({ command: 'serve', mode: 'development' }, candidate);
       if (loaded) return loaded.config;
     }
@@ -827,6 +841,9 @@ export async function startDevServer(
   projectRoot: string,
   options: StartDevServerOptions = {},
 ): Promise<DevServer> {
+  // Vite resolves module IDs through symlinks; fs.allow and aliases must use
+  // the same root, or /tmp → /private/tmp can fall through to raw TSX serving.
+  projectRoot = realpathSync(projectRoot);
   const dir = validityDir(projectRoot);
   const userConfigRaw = await loadUserViteConfig(projectRoot);
   const userConfig = absolutizeAliases(userConfigRaw, projectRoot);

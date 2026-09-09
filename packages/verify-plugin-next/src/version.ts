@@ -17,4 +17,4 @@
 export const PLUGIN_NAME = '@validity.ai/verify-plugin-next';
 
 /** npm package version, recorded as `generator.version`. */
-export const PLUGIN_VERSION = '0.0.1';
+export const PLUGIN_VERSION = '0.0.2';

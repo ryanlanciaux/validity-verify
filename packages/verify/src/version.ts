@@ -1,13 +1,11 @@
+import { readFileSync } from 'node:fs';
 import { formatBuildVersion } from '@validity.ai/verify-spec';
 
 /**
- * The CLI's package.json version. Mirrored as a literal (not read from
- * package.json at runtime — the shipped bundle is a single esbuild file with no
- * sibling package.json). cli.ts still hardcodes the same literal in
- * `cli.version(...)`; the deferred wiring swaps that for `cliVersionString()`
- * so this becomes the single source of truth.
+ * npm ships tsc output alongside package.json. Keep the literal fallback for
+ * standalone bundles, which may not have a sibling package.json.
  */
-const CLI_PKG_VERSION = '0.0.1';
+const CLI_PKG_VERSION = '0.0.2';
 
 /**
  * The CLI's own version string, build-stamped in shipped bundles
@@ -16,5 +14,13 @@ const CLI_PKG_VERSION = '0.0.1';
  * host still talking to a stale server.
  */
 export function cliVersionString(): string {
-  return formatBuildVersion(CLI_PKG_VERSION);
+  let version = CLI_PKG_VERSION;
+  try {
+    const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+    if (pkg.name === '@validity.ai/verify' && typeof pkg.version === 'string')
+      version = pkg.version;
+  } catch {
+    // Standalone bundle: use the embedded package version.
+  }
+  return formatBuildVersion(version);
 }

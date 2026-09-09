@@ -11,7 +11,10 @@ import {
   gitDiffNames,
   gitHeadSha,
   gitIsAncestor,
+  gitWorkingTreeChanges,
 } from './git.js';
+
+import { getChangedFilesFromGit } from './components.js';
 
 describe('collectGitInfo', () => {
   let tmpRoot: string;
@@ -79,6 +82,17 @@ describe('collectGitInfo', () => {
     const info = collectGitInfo(tmpRoot);
     expect(info?.branch).toBeUndefined();
     expect(info?.sha).toBe(sha);
+  });
+
+  it('finds staged and untracked files before the first commit, preserving whitespace', () => {
+    expect(gitWorkingTreeChanges(tmpRoot)).toEqual([]);
+    expect(getChangedFilesFromGit(tmpRoot)).toEqual([]);
+    gitInit();
+    expect(getChangedFilesFromGit(tmpRoot)).toEqual([]);
+    writeFileSync(resolve(tmpRoot, ' staged.tsx'), 'staged');
+    execFileSync('git', ['add', '.'], { cwd: tmpRoot });
+    writeFileSync(resolve(tmpRoot, 'untracked.tsx'), 'untracked');
+    expect(getChangedFilesFromGit(tmpRoot).sort()).toEqual([' staged.tsx', 'untracked.tsx']);
   });
 
   it('returns undefined for a repo with no commits (no HEAD)', () => {
